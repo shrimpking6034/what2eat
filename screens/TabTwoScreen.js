@@ -8,13 +8,16 @@ import { Text, View } from '../components/Themed';
 
 export default function TabTwoScreen() {
   const [foods, setFoods] = useState([])
+  const [showHistory, setShowHistory] = useState(false)
 
   const restoreFoodsFromAsync = async () => {
     const value = await AsyncStorage.getItem('foodH');
     if (value !== null) {
       setFoods(JSON.parse(value).slice(1))
+      setShowHistory(true)
     } else {
       setFoods([])
+      setShowHistory(false)
     }
   }
 
@@ -54,6 +57,9 @@ export default function TabTwoScreen() {
         keyExtractor={item => item.id}
 
       />
+      {showHistory==false?
+      <Text style={{flex: 5, fontSize: 20, color: 'white' }}> You do not have any likes yet.... </Text>:
+      <Text></Text>}
     </SafeAreaView>
   );
 }
