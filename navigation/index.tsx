@@ -9,6 +9,7 @@ import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
 import { ColorSchemeName, Pressable } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
@@ -41,7 +42,7 @@ function RootNavigator() {
       <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
       <Stack.Group screenOptions={{ presentation: 'modal' }}>
-        <Stack.Screen name="Modal" component={ModalScreen} />
+        <Stack.Screen name="Modal" component={ModalScreen} options={{ title: 'About' }} />
       </Stack.Group>
     </Stack.Navigator>
   );
@@ -52,6 +53,14 @@ function RootNavigator() {
  * https://reactnavigation.org/docs/bottom-tab-navigator
  */
 const BottomTab = createBottomTabNavigator<RootTabParamList>();
+
+const clearAll = async () => {
+  try {
+    await AsyncStorage.clear()
+  } catch(e) {
+    console.dir(e)
+  }
+}
 
 function BottomTabNavigator() {
   const colorScheme = useColorScheme();
@@ -66,8 +75,8 @@ function BottomTabNavigator() {
         name="TabOne"
         component={TabOneScreen}
         options={({ navigation }: RootTabScreenProps<'TabOne'>) => ({
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          title: 'What2Eat',
+          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
           headerRight: () => (
             <Pressable
               onPress={() => navigation.navigate('Modal')}
@@ -88,8 +97,22 @@ function BottomTabNavigator() {
         name="TabTwo"
         component={TabTwoScreen}
         options={{
-          title: 'Tab Two',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          title: 'History',
+          tabBarIcon: ({ color }) => <TabBarIcon name="history" color={color} />,
+          headerRight: () => (
+            <Pressable
+              onPress={() => {clearAll()}}
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.5 : 1,
+              })}>
+              <FontAwesome
+                name="minus-circle"
+                size={25}
+                color={Colors[colorScheme].text}
+                style={{ marginRight: 15 }}
+              />
+            </Pressable>
+          ),
         }}
       />
     </BottomTab.Navigator>
