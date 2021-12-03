@@ -16,11 +16,19 @@ let Foods = [
     { id: "6", uri: require('../assets/images/pho.jpg'), likes: 0, name: "Pho" },
     { id: "7", uri: require('../assets/images/pizza.jpg'), likes: 0, name: "Pizza" },
     { id: "8", uri: require('../assets/images/salad.jpg'), likes: 0, name: "Salad" },
+    { id: "9", uri: require('../assets/images/sushi.jpg'), likes: 0, name: "Sushi" },
+    { id: "10", uri: require('../assets/images/burrito.jpg'), likes: 0, name: "Burrito" },
+    { id: "11", uri: require('../assets/images/kungpao.jpg'), likes: 0, name: "Kung Pao Chicken" },
+    { id: "12", uri: require('../assets/images/ramen.jpg'), likes: 0, name: "Ramen" },
+    { id: "13", uri: require('../assets/images/sandwich.jpg'), likes: 0, name: "Sandwich" },
+    { id: "14", uri: require('../assets/images/steak.jpg'), likes: 0, name: "Steak" },
+    { id: "15", uri: require('../assets/images/macncheese.jpg'), likes: 0, name: "Mac and Cheese" },
+    { id: "16", uri: require('../assets/images/curry.jpg'), likes: 0, name: "Curry" },
 ]
 
 const storeData = async (value) => {
     try {
-        // console.log(Foods)
+        console.log(Foods.length)
         const jsonVal = JSON.stringify(value)
         // console.log(jsonVal)
         await AsyncStorage.setItem('foodH', jsonVal)
