@@ -28,7 +28,6 @@ let Foods = [
 
 const storeData = async (value) => {
     try {
-        console.log(Foods.length)
         const jsonVal = JSON.stringify(value)
         // console.log(jsonVal)
         await AsyncStorage.setItem('foodH', jsonVal)
@@ -51,9 +50,11 @@ const restoreFoodsFromAsync = async () => {
             item.likes = 0
         }
     }
-    return Foods
 }
 
+const accessFoodL = () => {
+    return Foods
+}
 
 export default class Foodtemplate extends React.Component {
 
@@ -61,7 +62,7 @@ export default class Foodtemplate extends React.Component {
     constructor() {
         super()
 
-        this.Foods = restoreFoodsFromAsync()
+        this.Foods = accessFoodL()
 
         this.position = new Animated.ValueXY()
         this.state = {

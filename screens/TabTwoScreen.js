@@ -33,16 +33,21 @@ export default function TabTwoScreen() {
   }, []);
 
   const renderItem = ({ item }) => {
-    return (
-      <View style={{ backgroundColor: '#cccccc', margin: 10, padding: 10, borderRadius: 20, flexDirection: 'column', flex:1 }}>
-        <View  style={{ flex: 1,}}>
-        <Image
-          style={{height: null, width: null, resizeMode:'cover',}}
-          source={item.uri} />
+    if (item.likes == 0) {
+      return null
+    } else {
+
+      return (
+        <View style={{ backgroundColor: '#cccccc', margin: 10, padding: 10, borderRadius: 20, flexDirection: 'column', flex: 1 }}>
+          <View style={{ flex: 1, }}>
+            <Image
+              style={{ height: null, width: null, resizeMode: 'cover', }}
+              source={item.uri} />
+          </View>
+          <Text style={{ flex: 5, fontSize: 20, color: 'white' }}> You've liked {item.name} {item.likes} times </Text>
         </View>
-        <Text style={{flex: 5, fontSize: 20, color: 'white' }}> You've liked {item.name} {item.likes} times </Text>
-      </View>
-    )
+      )
+    }
   }
 
   return (
@@ -57,9 +62,9 @@ export default function TabTwoScreen() {
         keyExtractor={item => item.id}
 
       />
-      {showHistory==false?
-      <Text style={{flex: 5, fontSize: 20, color: 'white' }}> You do not have any likes yet.... </Text>:
-      <Text></Text>}
+      {showHistory == false ?
+        <Text style={{ flex: 5, fontSize: 20, color: 'white' }}> You do not have any likes yet.... </Text> :
+        <Text></Text>}
     </SafeAreaView>
   );
 }
