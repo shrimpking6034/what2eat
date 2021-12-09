@@ -1,16 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Dimensions, Image, Animated, PanResponder } from 'react-native';
+import React from 'react';
+import { Text, View, Dimensions, Image, Animated, PanResponder, Modal, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ResultList from '../screens/ResultList';
+import Axios from 'axios';
+import {REACT_APP_API_KEY} from "@env";
 
 
 const SCREEN_HEIGHT = Dimensions.get('window').height
 const SCREEN_WIDTH = Dimensions.get('window').width
+const yelpAPIKEY = REACT_APP_API_KEY
+
 
 
 let Foods = [
     { id: "1", uri: require('../assets/images/swipe.png'), likes: 0, name: "swipe" },
     { id: "2", uri: require('../assets/images/burger.jpeg'), likes: 0, name: "Burger" },
-    { id: "3", uri: require('../assets/images/chicken.jpg'), likes: 0, name: "Chicken" },
+    { id: "3", uri: require('../assets/images/chicken.jpg'), likes: 0, name: "Fried Chicken" },
     { id: "4", uri: require('../assets/images/friedrice.jpg'), likes: 0, name: "Fried Rice" },
     { id: "5", uri: require('../assets/images/pasta.jpg'), likes: 0, name: "Pasta" },
     { id: "6", uri: require('../assets/images/pho.jpg'), likes: 0, name: "Pho" },
@@ -29,26 +34,32 @@ let Foods = [
 const storeData = async (value) => {
     try {
         const jsonVal = JSON.stringify(value)
-        // console.log(jsonVal)
         await AsyncStorage.setItem('foodH', jsonVal)
         restoreFoodsFromAsync()
-        // console.log(Foods)
     } catch (e) {
         console.log("err in storeData")
         console.dir(e)
     }
 }
 
+
 const restoreFoodsFromAsync = async () => {
     const value = await AsyncStorage.getItem('foodH');
     if (value !== null) {
-        // console.log(value)
         Foods = JSON.parse(value)
     } else {
-        // console.log('no restore')
         for (let item of Foods) {
             item.likes = 0
         }
+    }
+}
+
+const restoreZipfromAsync =  async() => {
+    const value = await AsyncStorage.getItem('zip');
+    if (value !== null) {
+        return JSON.parse(value)
+    }else{
+        return '02453'
     }
 }
 
@@ -66,7 +77,12 @@ export default class Foodtemplate extends React.Component {
 
         this.position = new Animated.ValueXY()
         this.state = {
-            currentIndex: 0
+            currentIndex: 0,
+            modalVisible: false,
+            searchResult: null,
+            loading: false,
+            likedfood: '',
+            zipCode: '02453'
         }
 
         this.rotate = this.position.x.interpolate({
@@ -106,6 +122,37 @@ export default class Foodtemplate extends React.Component {
         })
 
     }
+
+    yelpsearch = (searchterm) => {
+        this.setState({zipCode: restoreZipfromAsync()})
+
+        const config = {
+            headers: { 'Authorization': 'Bearer ' + yelpAPIKEY },
+            params: {
+                limit: 10,
+                term: searchterm,
+                location: this.state.zipCode
+            }
+        };
+
+        this.setState({ loading: true })
+        Axios.get('https://api.yelp.com/v3/businesses/search', config)
+            .then(response => {
+                setTimeout(() => {
+                    this.setState({
+                        loading: false,
+                        searchResult: response.data.businesses,
+                        modalVisible: true
+                    }),
+                        console.log(this.state.searchResult)
+                }, 1000)
+            })
+            .catch(error => {
+                console.log(error);
+            })
+        return this.state.searchResult;
+    };
+
     UNSAFE_componentWillMount() {
         this.PanResponder = PanResponder.create({
 
@@ -119,6 +166,9 @@ export default class Foodtemplate extends React.Component {
                 if (gestureState.dx > 120) {
                     Foods[this.state.currentIndex].likes++
                     storeData(Foods)
+                    this.yelpsearch(Foods[this.state.currentIndex].name)
+                    this.setState({ likedfood: Foods[this.state.currentIndex].name })
+
                     Animated.spring(this.position, {
                         toValue: { x: SCREEN_WIDTH + 100, y: gestureState.dy },
                         useNativeDriver: true,
@@ -152,6 +202,15 @@ export default class Foodtemplate extends React.Component {
         })
     }
 
+    componentDidUpdate(prevProps) {
+        if (this.props.searchResult != prevProps.searchResult) {
+            this.setState({ modalVisible: true })
+
+            console.log(this.state)
+            this.render()
+        }
+    }
+
     useEffect = (() => {
         restoreFoodsFromAsync()
 
@@ -171,11 +230,9 @@ export default class Foodtemplate extends React.Component {
 
 
             if (i < this.state.currentIndex) {
-                // console.log('if')
                 return null
             }
             else if (i == this.state.currentIndex) {
-                // console.log('elif')
                 return (
                     <Animated.View
                         {...this.PanResponder.panHandlers}
@@ -205,7 +262,6 @@ export default class Foodtemplate extends React.Component {
                 )
             }
             else {
-                // console.log('else')
                 return (
                     <Animated.View
 
@@ -246,6 +302,26 @@ export default class Foodtemplate extends React.Component {
                 <View style={{ flex: 1 }}>
                     {this.renderFood()}
                 </View>
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    opacity="50%"
+                    full
+                    visible={this.state.modalVisible}
+                    onRequestClose={() => {
+                        Alert.alert("More details about restaurants will be supported soon.");
+                        this.setState({modalVisible: false});
+                    }}
+                >
+                    <View style={{ backgroundColor: 'rgba(0,0,0,0.7)', height: SCREEN_HEIGHT * 3 / 4, width: SCREEN_WIDTH, marginTop: SCREEN_HEIGHT / 4, position: 'absolute', borderTopLeftRadius: 25, borderTopRightRadius: 25, opacity: 50 }}>
+                        <Text style={{ color: 'white', fontWeight: "bold", fontSize: 32 }}> Restaurants for {this.state.likedfood} </Text>
+                        <View style={{ marginLeft: SCREEN_WIDTH - 60 }}>
+                            <Image style={{ width: 50, height: 20 }}
+                                source={require('../assets/images/yelp_logo_dark_bg_cmyk.png')} />
+                        </View>
+                        <ResultList result={this.state.searchResult} />
+                    </View>
+                </Modal>
             </View>
 
         );
