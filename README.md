@@ -11,6 +11,7 @@ Just like Tinder, swipe left and right to look at foods!
 The app also will tell you where to get the recommended food.
 
 ## Screenshots
+Below images are took on dark mode
 ![screenshot1](assets/images/screenshot1.jpg)
 ![screenshot2](assets/images/screenshot2.jpg)
 ![screenshot3](assets/images/screenshot3.jpg)
@@ -26,5 +27,5 @@ Then it will search the restaurants near you that sells the menu.
 ## Developer Notes
 Used React Native, JavaScript dependencies and libraries.
 Used AsyncStorage to locally save user history for food and zip code to look restaurants near
-Used Yelp API to search restaurants which sells the user-selected menu
+Used Yelp API to search restaurants which sells the user-selected menu 
 A full dependency list can be found in package.json
