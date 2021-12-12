@@ -49,6 +49,7 @@ export default function ModalScreen() {
         style={{ backgroundColor: '#ccc', color: '#fff', width: 50, borderRadius: 10, }}
         onChangeText={setZipCode}
         placeholder={zipCode}
+        keyboardType="numeric"
       />
       <TouchableOpacity
         style={styles.submitButton}
