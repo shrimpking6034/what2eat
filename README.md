@@ -26,11 +26,11 @@ https://drive.google.com/file/d/1ANUKF6_GAE5872Fn8-dVbW2-k7URPYK0/view?usp=shari
 
 2. switch to the project's root directory in terminal
 
-3. create `.env` file and add Yelp API key to the file
+3. create `.env` file and add Yelp API key to the file as `REACT_APP_API_KEY = `
 
-3. install the dependencies by running `npm install` 
+4. install the dependencies by running `npm install` 
 
-4. after the dependencies are installed, run `expo start` to start
+5. after the dependencies are installed, run `expo start` to start
 
 ## How to
 Swipe left to skip, Swipe right to like.\
